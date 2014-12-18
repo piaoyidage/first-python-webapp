@@ -1,5 +1,0 @@
-Mon, 15 Dec 2014 21:51:19 logging_1.py[line:17] DEBUG This is a debug message
-Mon, 15 Dec 2014 21:51:19 logging_1.py[line:18] INFO This is a info message
-Mon, 15 Dec 2014 21:51:19 logging_1.py[line:19] WARNING This is a warning message
-Mon, 15 Dec 2014 21:51:19 logging_1.py[line:20] ERROR This is a error message
-Mon, 15 Dec 2014 21:51:19 logging_1.py[line:21] CRITICAL This is a critical message
