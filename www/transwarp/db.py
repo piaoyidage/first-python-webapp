@@ -297,7 +297,7 @@ def _select(sql, first, *args):
     logging.info('SQL:%s, ARGS:%s' % (sql, args))
     try:
         cursor = _db_ctx.connection.cursor()
-        cursor.execute(sql, *args)
+        cursor.execute(sql, args)
         if cursor.description:
             # get column's name for each column
             names = [x[0] for x in cursor.description]
@@ -348,7 +348,7 @@ def _update(sql, *args):
     logging.info('SQL:%s, ARGS:%s' % (sql, args))
     try:
         cursor = _db_ctx.connection.cursor()
-        cursor.execute(sql, *args)
+        cursor.execute(sql, args)
         r = cursor.rowcount
         if _db_ctx.transactions == 0:
             # no transaction environment
@@ -364,7 +364,7 @@ def insert(table, **kw):
     '''
     '''
     cols, args = zip(*kw.iteritems())
-    sql = 'insert into `%s` (%s) values (%s)' % (table, ','.join(['`%s`' % col for col in cols]), ','.join(['?' % i for i in range(len(cols))]))
+    sql = 'insert into `%s` (%s) values (%s)' % (table, ','.join(['`%s`' % col for col in cols]), ','.join(['?' for i in range(len(cols))]))
     _update(sql, *args)
     
 def update(sql, *args):
@@ -373,6 +373,11 @@ def update(sql, *args):
     return _update(sql, *args)
 
 if __name__ == '__main__':
+    logging.basicConfig(level = logging.DEBUG, 
+                    format = '%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                    datefmt = '%a, %d %b %Y %H:%M:%S',
+                    filename = 'info.log',
+                    filemode = 'w')
     create_engine('root', 'root', 'test_python')
     update('drop table if exists user')
     update('create table user(id int primary key, name text, passwd text, last_modified real)')

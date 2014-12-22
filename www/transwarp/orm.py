@@ -6,7 +6,7 @@ Created on 2014-12-18
 '''
 import logging
 import db
-from sqlalchemy.engine import create_engine
+# from _pyio import __metaclass__
 
 '''
 Database operation module.This module is independent with web module.
@@ -34,10 +34,10 @@ class Field(object):
         return d() if callable(d) else d 
     
     def __str__(self):
-        s = ['<%s:%s,%s,default(%s),' % (self.__class__.name, self.name, self.ddl, self._default)]
-        s.nullable and s.append('N,')
-        s.insertable and s.append('I,')
-        s.updateable and s.append('U,')
+        s = ['<%s:%s,%s,default(%s),' % (self.__class__.__name__, self.name, self.ddl, self._default)]
+        self.nullable and s.append('N,')
+        self.insertable and s.append('I,')
+        self.updateable and s.append('U,')
         s.append('>')
         return ''.join(s)
 
@@ -49,7 +49,7 @@ class StringField(Field):
             kw['default'] = ''
         if not 'ddl' in kw:
             kw['ddl'] = 'varchar(255)'
-        super(StringField, self).__init__(self, **kw)
+        super(StringField, self).__init__(**kw)
         
 # 整型
 class IntegerField(Field):
@@ -59,7 +59,7 @@ class IntegerField(Field):
             kw['default'] = 0
         if not 'ddl' in kw:
             kw['ddl'] = 'bigint'
-        super(IntegerField, self).__init__(self, **kw)
+        super(IntegerField, self).__init__(**kw)
         
 # 浮点型
 class FloatField(Field):
@@ -69,7 +69,7 @@ class FloatField(Field):
             kw['default'] = 0.0
         if not 'ddl' in kw:
             kw['ddl'] = 'real'
-        super(FloatField, self).__init__(self, **kw)
+        super(FloatField, self).__init__(**kw)
         
 # 布尔型
 class BooleanField(Field):
@@ -110,10 +110,10 @@ class VersionField(Field):
 # 根据表名和键值映射创建表
 def _gen_sql(table_name, mapping):
     primary_key = None
-    s = ['--generate sql table' % table_name, 'create table `%s` (' % table_name]
+    s = ['#generate sql table %s' % table_name, 'create table `%s` (' % table_name]
     # 按照顺序创建表的元素
     for f in sorted(mapping.values(), lambda x, y: cmp(x._order, y._order)):
-        if hasattr(f, 'ddl'):
+        if not hasattr(f, 'ddl'):
             raise StandardError('Field %s has not ddl' % f.name)
         ddl = f.ddl
         nullable = f.nullable
@@ -162,7 +162,7 @@ class ModelMetaclass(type):
                     v.name = k 
                 logging.info('Found mapping %s=>%s' % (k, v))
                 # 对于primary_key处理
-                if v.primar_key:
+                if v.primary_key:
                     if primary_key:
                         raise TypeError(r"class %s can't have more than 1 primary key" % name)
                     if v.updateable:
@@ -181,7 +181,7 @@ class ModelMetaclass(type):
             attrs.pop(k)
         
         # 数据库表的名字
-        if not hasattr(name, '__table__'):
+        if '__table__' not in attrs:
             attrs['__table__'] = name.lower()
         attrs['__mapping__'] = mapping
         attrs['__primary_key__'] = primary_key
@@ -200,6 +200,8 @@ class Model(dict):
     '''
     Base class for ORM.
     '''
+    
+    __metaclass__ = ModelMetaclass
     
     def __init__(self, **kw):
         super(Model, self).__init__(**kw)
