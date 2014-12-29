@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 '''
-Created on 2014-12-18
+Created on 2014-12-23
 @author: Ben
 '''
 
-# 项目第四天，编写具体与数据库表对应的类，以及建立数据库
-# 主要代码位于www.models模块
-# 数据库test.sql
+# 项目第五天，编写web框架
+# 主要代码位于www.transwarp.web模块
